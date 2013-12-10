@@ -12,6 +12,9 @@ open Fake.MSTest
 // Definitions
 
 let srcDir  = @".\src\"
+let nugetPath = @".\tools\nuget\nuget.exe"
+let deploymentDir = @".\deployment\nuget\"
+let nugetAccessKey = ""
 let version = "1.0.0.0"
 
 let outputDir = @".\output\"
@@ -136,6 +139,62 @@ FinalTarget "CloseNUnitTestRunner" (fun _ ->
 )
 
 // --------------------------------------------------------------------------------------
+// Build a NuGet package
+
+Target "NuGet" (fun _ ->
+    let getOutputFile name ext = sprintf @"%s\NET40\Orchestra.%s\Orchestra.%s.%s" outputReleaseDir name name ext
+    let libraryFiles = !! (getOutputFile "Library" "dll")
+                        ++ (getOutputFile "Library" "xml")
+    let shellFiles = !! (getOutputFile "Shell" "dll")
+                        ++ (getOutputFile "Shell" "xml")
+    
+    let libraryDependencies =
+                    ["Catel.Extensions.Controls", GetPackageVersion "./lib/" "Catel.Extensions.Controls"
+                     "Catel.Extensions.Prism", GetPackageVersion "./lib/" "Catel.Extensions.Prism"
+                     "Prism", GetPackageVersion "./lib/" "Prism"]
+    let shellDependencies = 
+        List.append libraryDependencies
+                    ["Fluent.Ribbon", GetPackageVersion "./lib/" "Fluent.Ribbon"
+                     "Orchestra.Library", version]
+
+    let workingDeploymentDir = deploymentDir + @"packages\"
+    let dllDeploymentDir = workingDeploymentDir + @"lib\NET40\"
+    let getNupkgFile name = sprintf "%sOrchestra.%s.%s.nupkg" dllDeploymentDir name version
+    let getNuspecFile name = sprintf "%stemplate\Orchestra.%s\Orchestra.%s.nuspec" deploymentDir name name
+
+    let preparePackage filesToPackage = 
+        CreateDir workingDeploymentDir
+        CreateDir dllDeploymentDir
+        CopyFiles dllDeploymentDir filesToPackage
+
+    let cleanPackage nupkgFileName = 
+        MoveFile workingDeploymentDir (getNupkgFile nupkgFileName)
+        DeleteDir (workingDeploymentDir + "lib")
+
+    let doPackage name dependencies =   
+        NuGet (fun p -> 
+            {p with
+                Version = version
+                ToolPath = nugetPath
+                OutputPath = dllDeploymentDir
+                WorkingDir = workingDeploymentDir
+                Dependencies = dependencies
+                Publish = not (String.IsNullOrEmpty nugetAccessKey)
+                AccessKey = nugetAccessKey }) 
+////                AccessKey = getBuildParamOrDefault "nugetkey" ""
+////                Publish = hasBuildParam "nugetkey" }) 
+                (getNuspecFile name)
+    
+    let doAll name files depenencies =
+        preparePackage files
+        doPackage name depenencies
+        cleanPackage name
+
+    doAll "Library" libraryFiles libraryDependencies
+    doAll "Shell" shellFiles shellDependencies
+)
+
+// --------------------------------------------------------------------------------------
 // Combined targets
 
 Target "Clean" DoNothing
@@ -153,5 +212,8 @@ Target "All" DoNothing
 "Clean" ==> "All"
 "Build" ==> "All"
 "Tests" ==> "All"
+
+Target "Release" DoNothing
+"NuGet" ==> "Release"
  
-RunTargetOrDefault "All"
+RunTargetOrDefault "Release"

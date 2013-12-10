@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
   <metadata>
     <id>Orchestra.Shell</id>
-    <version>[VERSION]</version>
+    <version>@build.number@</version>
     <title>Orchestra.Shell</title>
     <authors>GeertvanHorrik,OrchestraDevs</authors>
     <owners>GeertvanHorrik,OrchestraDevs</owners>
@@ -24,12 +24,12 @@
 	<!--<iconUrl>http://www.catenalogic.com/catel.png</iconUrl>-->
 
     <dependencies>
-      <!--<dependency id="AvalonDock" version="[AVALONDOCKVERSION]" />-->
+      <!--<dependency id="AvalonDock" version="[AVALONDOCKVERSION]" />
       <dependency id="Catel.Extensions.Controls" version="[CATELVERSION]" />
       <dependency id="Catel.Extensions.Prism" version="[CATELVERSION]" />
       <dependency id="Fluent.Ribbon" version="[FLUENTVERSION]" />
       <dependency id="Orchestra.Library" version="[VERSION]" />
-      <dependency id="Prism" version="4.1.0.0" />
+      <dependency id="Prism" version="4.1.0.0" />-->
     </dependencies>
   </metadata>
 </package>

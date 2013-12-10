@@ -20,7 +20,7 @@ let version = "1.0.0.0"
 let outputDir = @".\output\"
 let outputDebugDir = outputDir + "debug"
 let outputReleaseDir = outputDir + "release"
-let testDir = outputDir + "tests"
+let testDir = outputDir + @"tests\"
 
 let outputDebugFiles = !! (outputDebugDir + @"\**\*.*")
                             -- "*.vshost.exe"
@@ -97,7 +97,7 @@ Target "BuildOtherProjects" (fun _ ->
 
 Target "BuildTests" (fun _ ->    
     testProjects
-      |> MSBuildDebug "" "Rebuild" 
+      |> MSBuildRelease "" "Rebuild" 
       |> Log "Build Tests: "
 )
 

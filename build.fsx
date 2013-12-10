@@ -216,4 +216,4 @@ Target "All" DoNothing
 Target "Release" DoNothing
 "NuGet" ==> "Release"
  
-RunTargetOrDefault "Release"
+RunTargetOrDefault "All"

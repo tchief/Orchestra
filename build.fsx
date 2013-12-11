@@ -51,8 +51,8 @@ let otherProjects = !! allProjects
 // --------------------------------------------------------------------------------------
 // Clean build results
 
-Target "CleanDirectories" (fun _ ->
-    CleanDirs [outputDebugDir; outputReleaseDir; testDir]
+Target "CleanPackagesDirectory" (fun _ ->
+    CleanDirs [(deploymentDir + "packages");]
 )
 
 Target "DeleteOutputFiles" (fun _ ->
@@ -142,6 +142,7 @@ FinalTarget "CloseNUnitTestRunner" (fun _ ->
 // Build a NuGet package
 
 Target "NuGet" (fun _ ->
+    let nugetAccessPublishKey = getBuildParamOrDefault "nugetkey" nugetAccessKey
     let getOutputFile name ext = sprintf @"%s\NET40\Orchestra.%s\Orchestra.%s.%s" outputReleaseDir name name ext
     let libraryFiles = !! (getOutputFile "Library" "dll")
                         ++ (getOutputFile "Library" "xml")
@@ -179,10 +180,8 @@ Target "NuGet" (fun _ ->
                 OutputPath = dllDeploymentDir
                 WorkingDir = workingDeploymentDir
                 Dependencies = dependencies
-                Publish = not (String.IsNullOrEmpty nugetAccessKey)
-                AccessKey = nugetAccessKey }) 
-////                AccessKey = getBuildParamOrDefault "nugetkey" ""
-////                Publish = hasBuildParam "nugetkey" }) 
+                Publish = not (String.IsNullOrEmpty nugetAccessPublishKey)
+                AccessKey = nugetAccessPublishKey })
                 (getNuspecFile name)
     
     let doAll name files depenencies =
@@ -198,7 +197,7 @@ Target "NuGet" (fun _ ->
 // Combined targets
 
 Target "Clean" DoNothing
-"DeleteOutputFiles" ==> "DeleteOutputDirectories" ==> "Clean"
+"CleanPackagesDirectory" ==> "DeleteOutputFiles" ==> "DeleteOutputDirectories" ==> "Clean"
 
 Target "Build" DoNothing
 "UpdateAssemblyVersion" ==> "Build"
@@ -214,6 +213,7 @@ Target "All" DoNothing
 "Tests" ==> "All"
 
 Target "Release" DoNothing
+"All" ==> "Release"
 "NuGet" ==> "Release"
  
 RunTargetOrDefault "All"

@@ -11,8 +11,8 @@ Main (composite) targets are:
 - All: all above, default one, run by <i>build.bat</i>
 - Release: all above + creates NuGet packages and publish it if access key is specified, run by <i>publish.bat</i>
 
-If one of the target fails then all build (including all next targets) fails.
-For example, when run 'All' target (by <i>build.bat</i>) and build fails, then tests would not be run.
+If one of the target fails then all build (including all next targets) fails.  
+For example, when run 'All' target (by <i>build.bat</i>) and build fails, then tests would not be run.  
 Or if you run 'Release' target (by <i>publish.bat</i>) and some test fails, then NuGet packages would not be created and published.
 
 ### NuGet packages
@@ -23,7 +23,7 @@ It could be achieved in two ways:
 ```
 	let nugetAccessKey = "somevalidaccesskey"
 ```
-- Pass via cmd parameter in <i>publish.bat</i> (line 6, commit 091fea9e6d4515fcb69e14d4cd910a5b17393bb0):
+- Passed via cmd parameter in <i>publish.bat</i> (line 6, commit 091fea9e6d4515fcb69e14d4cd910a5b17393bb0):
 ```
 	build.fsx %* Release  "nugetkey=somevalidaccesskey"
 ```

@@ -97,7 +97,7 @@ Target "BuildOtherProjects" (fun _ ->
 
 Target "BuildTests" (fun _ ->    
     testProjects
-      |> MSBuildRelease "" "Rebuild" 
+      |> MSBuildRelease "" "Build" 
       |> Log "Build Tests: "
 )
 

@@ -175,6 +175,7 @@ Target "NuGet" (fun _ ->
     let doPackage name dependencies =   
         NuGet (fun p -> 
             {p with
+                Project = "Orchestra." + name
                 Version = version
                 ToolPath = nugetPath
                 OutputPath = dllDeploymentDir
